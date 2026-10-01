@@ -211,17 +211,39 @@ window.saveCloseMember = async function(id) {
 // ---------------- 부과대수 ----------------
 async function renderAllocation() {
   const body = document.getElementById("memberSectionBody");
-  body.innerHTML = `<div class="toolbar-card"><div class="toolbar-title"><b>부과대수</b><span class="hint">운영 대시보드 자동집계</span></div></div>${loadingHtml()}`;
+  body.innerHTML = `<div class="allocation-head"><div><span>부과대수</span><b>운영 현황을 한눈에 확인해</b></div><small>실시간 자동집계</small></div>${loadingHtml()}`;
   try {
     const [full, list] = await Promise.all([
       apiRequest("/api/dashboard/full-stats"),
       apiRequest("/api/allocation/list").catch(() => null),
     ]);
     const a = full.allocation || {};
-    const keys = ["협회가입","양도누계","이관누계","폐업누계","탈퇴","택배신규","관리비폐지","70세","협회기본대수","총부과대수","택배관리"];
-    body.innerHTML = `<div class="toolbar-card"><div class="toolbar-title"><b>부과대수</b><span class="hint">운영 대시보드 자동집계</span></div></div>
-      <div class="kpi-grid">${keys.map(k=>`<div class="kpi"><span>${esc(k)}</span><b>${Number(a[k] ?? 0).toLocaleString()}</b></div>`).join("")}</div>
-      ${list?.items?.length ? `<div class="card"><h3>저장된 부과대수 이력</h3>${list.items.slice(0,24).map(r=>`<div class="history-row"><b>${esc(r.year)}.${String(r.month).padStart(2,'0')}</b><span>총 ${Number(r.total_count||0).toLocaleString()}대</span></div>`).join("")}</div>` : ""}`;
+    const val = (k) => Number(a[k] ?? 0).toLocaleString('ko-KR');
+    const metric = (label,key,tone='') => `<div class="allocation-metric ${tone}"><span>${esc(label)}</span><strong>${val(key)}</strong><small>대</small></div>`;
+    body.innerHTML = `
+      <div class="allocation-head"><div><span>부과대수</span><b>운영 현황을 한눈에 확인해</b></div><small>실시간 자동집계</small></div>
+      <section class="allocation-hero">
+        <span>총 부과대수</span>
+        <div><strong>${val('총부과대수')}</strong><small>대</small></div>
+        <p>현재 시스템 집계 기준</p>
+      </section>
+      <div class="allocation-section-title">현재 관리 구성</div>
+      <div class="allocation-grid">
+        ${metric('협회가입','협회가입','primary')}
+        ${metric('택배관리','택배관리','primary')}
+        ${metric('70세','70세')}
+        ${metric('협회기본대수','협회기본대수')}
+        ${metric('택배신규','택배신규')}
+        ${metric('관리비폐지','관리비폐지')}
+      </div>
+      <div class="allocation-section-title">변동 누계</div>
+      <div class="allocation-change-card">
+        <div><span>양도 누계</span><strong>${val('양도누계')}</strong></div>
+        <div><span>이관 누계</span><strong>${val('이관누계')}</strong></div>
+        <div><span>폐업 누계</span><strong>${val('폐업누계')}</strong></div>
+        <div><span>탈퇴</span><strong>${val('탈퇴')}</strong></div>
+      </div>
+      ${list?.items?.length ? `<div class="allocation-section-title">월별 이력</div><div class="allocation-history">${list.items.slice(0,12).map(r=>`<div><span>${esc(r.year)}.${String(r.month).padStart(2,'0')}</span><strong>${Number(r.total_count||0).toLocaleString()}대</strong></div>`).join("")}</div>` : ""}`;
   } catch (e) { body.innerHTML = errorHtml(e.message); }
 }
 

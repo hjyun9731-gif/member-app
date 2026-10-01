@@ -28,10 +28,12 @@ async function renderHome() {
     <div id="homeErr"></div>`;
 
   try {
-    const [full, rec, recent] = await Promise.all([
+    const [full, rec, recent, candidateData] = await Promise.all([
       apiRequest('/api/dashboard/full-stats'),
       apiRequest('/api/receivables/summary').catch(()=>null),
       apiRequest('/api/dashboard/recent-by-type?limit=5').catch(()=>null),
+      // 예정자 수는 대시보드 집계값에 의존하지 않고 실제 예정자 목록 API의 total을 사용한다.
+      apiRequest('/api/candidates?page=1&limit=1').catch(()=>null),
     ]);
     const s = full.summary || {};
     document.getElementById('homeSummary').innerHTML = `
@@ -40,7 +42,7 @@ async function renderHome() {
 
     const recTotal = pickNumber(rec, ['total_balance','total_arrears','balance','arrears_total','total']) ;
     const recMembers = pickNumber(rec, ['member_count','arrears_members','members','count']);
-    const candidates = Number(s.candidates || 0);
+    const candidates = Number(candidateData?.total ?? s.candidates ?? 0);
     const recentCount = Array.isArray(recent) ? recent.length : Array.isArray(recent?.items) ? recent.items.length : Number(recent?.total || 0);
     document.getElementById('homeTasks').innerHTML = `
       <button class="task" onclick="location.hash='#/receivables'"><div class="task-ico blue">₩</div><div class="task-body"><div class="task-title">미수금 확인</div><div class="task-sub">${recMembers ? `미수 회원 ${num(recMembers)}명` : '회원별 미수 현황'}${recTotal ? ` · ${money(recTotal)}` : ''}</div></div><div class="chev">›</div></button>

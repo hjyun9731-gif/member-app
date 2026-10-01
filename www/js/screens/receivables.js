@@ -29,7 +29,9 @@ window.resetReceivables=function(){receivableState.filters={q:'',region:'',accou
 
 window.loadReceivableMembers=async function(page=1){
   receivableState.page=page; const host=document.getElementById('recList'); if(!host)return; host.innerHTML=loadingHtml();
-  const p=new URLSearchParams({scope:'active',closure_mode:'current',arrears_only:String(!receivableState.filters.billing_status),contacted_only:'false',page:String(page),limit:'30'});
+  // 이름/차량번호/전화번호로 존재 여부와 잔액을 확인하는 화면이므로 기본 조회는 활성회원 전체다.
+  // '미수' 필터를 선택했을 때만 billing_status=arrears로 서버가 좁혀서 조회한다.
+  const p=new URLSearchParams({scope:'active',closure_mode:'current',arrears_only:'false',contacted_only:'false',page:String(page),limit:'30'});
   Object.entries(receivableState.filters).forEach(([k,v])=>{if(v)p.set(k,v)});
   try{
     const d=await apiRequest(`/api/receivables/members?${p}`); receivableState.pages=Number(d.pages||1);
