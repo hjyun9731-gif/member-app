@@ -1,0 +1,6 @@
+{
+  "appId": "kr.or.gangwontruck.app",
+  "appName": "강원개인소형화물협회",
+  "webDir": "www",
+  "server": { "androidScheme": "https" }
+}

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>강원 개인소형화물</title>
+<link rel="stylesheet" href="css/tokens.css">
+</head>
+<body>
+<div id="app">
+  <header class="appbar" id="appbar">
+    <button class="back" id="backBtn" style="visibility:hidden" aria-label="뒤로가기">‹</button>
+    <span id="appbarTitle">강원 개인소형화물</span>
+    <span style="width:38px"></span>
+  </header>
+  <main id="view"></main>
+  <nav class="tabbar" id="tabbar" style="display:none">
+    <button class="tab" data-tab="home"><div class="ic"></div>홈</button>
+    <button class="tab" data-tab="members"><div class="ic"></div>회원</button>
+    <button class="tab" data-tab="receivables"><div class="ic"></div>미수금</button>
+    <button class="tab" data-tab="more"><div class="ic"></div>더보기</button>
+  </nav>
+</div>
+<script src="js/api.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/screens/login.js"></script>
+<script src="js/screens/home.js"></script>
+<script src="js/screens/members.js"></script>
+<script src="js/screens/receivables.js"></script>
+<script src="js/screens/more.js"></script>
+<script src="js/router.js"></script>
+</body>
+</html>
